@@ -1,6 +1,6 @@
 8 8
 oooooooo
-oooooooB
+...ooooB
 oo#o####
 Co#ooooo
 oo#ooDoo

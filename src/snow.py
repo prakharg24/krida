@@ -50,9 +50,11 @@ def check_edge(mat, i, j, diri, dirj):
 def dijkstras(mat, sti, stj):
 	dist_mat = np.ones((len(mat),len(mat[0]))) * float("inf")
 	dist_mat[sti][stj] = mat[sti][stj]
+	# dist_mat[sti][stj] = 0
 	vis_mat = np.zeros((len(mat),len(mat[0])))
 	curr_set = []
 	heapq.heappush(curr_set, (mat[sti][stj], (sti, stj)))
+	# heapq.heappush(curr_set, (0, (sti, stj)))
 	while(len(curr_set)!=0):
 		curr_ele = heapq.heappop(curr_set)
 		curr_dis = curr_ele[0]
@@ -83,7 +85,7 @@ def solve(ele):
 	for i in range(n):
 		row = []
 		for j in range(m):
-			row.append({"dij" : dijkstras(ele["mat"], i, j), "subset" : np.zeros((16))})
+			row.append({"dij" : dijkstras(ele["mat"], i, j), "subset" : np.zeros((16)), "last" : np.zeros((16, 2))})
 		fnl_mat.append(row)
 
 	houses = [1, 2, 4, 8]
@@ -92,6 +94,8 @@ def solve(ele):
 		for i in range(n):
 			for j in range(m):
 				fnl_mat[i][j]["subset"][hus] = fnl_mat[i][j]["dij"][house_c[0]][house_c[1]]
+				fnl_mat[i][j]["last"][hus][0] = i
+				fnl_mat[i][j]["last"][hus][1] = j
 
 	for sub in range(1, 16):
 		if sub in houses:
@@ -101,32 +105,22 @@ def solve(ele):
 			if(subsub & sub == subsub):
 				sec1 = subsub
 				sec2 = subsub ^ sub
-				print(subsub, sub, sec1, sec2)
 				for i in range(n):
 					for j in range(m):
 						curr_subset = fnl_mat[i][j]["subset"]
-						min_join = curr_subset[sec1] + curr_subset[sec2] - 1
+						min_join = curr_subset[sec1] + curr_subset[sec2] - ele["mat"][i][j]
 						if(min_join < first_update[i][j]):
 							first_update[i][j] = min_join
 
-		print(first_update)
-
-		# second_update = np.ones((n, m)) * float("inf")
 		for i in range(n):
 			for j in range(m):
 				min_val = first_update[i][j]
 				for i2 in range(n):
 					for j2 in range(m):
-						poss_min = first_update[i2][j2] + fnl_mat[i][j]["dij"][i2][j2]
+						poss_min = first_update[i2][j2] + fnl_mat[i][j]["dij"][i2][j2] - ele["mat"][i2][j2]
 						if(poss_min < min_val):
 							min_val = poss_min
 				fnl_mat[i][j]["subset"][sub] = min_val
-		
-		for i in range(n):
-			for j in range(m):
-				
-
-		break
 
 	min_val = float("inf")
 	for i in range(n):
