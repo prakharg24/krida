@@ -1,5 +1,15 @@
 8 8
 oooooooo
+oooooooB
+oo#o####
+Co#ooooo
+oo#ooDoo
+oooooooo
+ooAooooo
+oooooooo
+
+8 8
+oooooooo
 ...ooooB
 oo#o####
 Co#ooooo

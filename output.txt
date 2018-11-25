@@ -1,10 +1,20 @@
 8 8
 oooooooo
-...ooooB
-oo#o####
-Co#ooooo
-oo#ooDoo
+oooo...B
+oo#.####
+C.#.oooo
+o.#..Doo
+o...oooo
+ooAooooo
 oooooooo
+
+8 8
+oooooooo
+.......B
+.o#.####
+Co#.oooo
+oo#..Doo
+oo..oooo
 ooAooooo
 oooooooo
 
