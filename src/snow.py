@@ -4,6 +4,7 @@ import heapq
 
 sweden_dict = {"A":0, "B":0, "C":0, "D":0, "o":1, ".":0, "#":float("inf")}
 houses_ind = ["A", "B", "C", "D"]
+rev_houses = {0:"A", 1:"B", 2:"C", 3:"D"}
 
 def get_input(fname):
 	raw_data = open(fname, "r")
@@ -24,7 +25,7 @@ def get_input(fname):
 				map_row.append(cha)
 				mat_row.append(sweden_dict[cha])
 				if cha in houses_ind:
-					new_case["houses"][cha] = (i, row_count)
+					new_case["houses"][cha] = (row_count, i)
 			new_case["map"].append(map_row)
 			new_case["mat"].append(mat_row)
 			row_count += 1
@@ -48,10 +49,10 @@ def check_edge(mat, i, j, diri, dirj):
 
 def dijkstras(mat, sti, stj):
 	dist_mat = np.ones((len(mat),len(mat[0]))) * float("inf")
-	dist_mat[sti][stj] = 0
+	dist_mat[sti][stj] = mat[sti][stj]
 	vis_mat = np.zeros((len(mat),len(mat[0])))
 	curr_set = []
-	heapq.heappush(curr_set, (0, (sti, stj)))
+	heapq.heappush(curr_set, (mat[sti][stj], (sti, stj)))
 	while(len(curr_set)!=0):
 		curr_ele = heapq.heappop(curr_set)
 		curr_dis = curr_ele[0]
@@ -74,13 +75,66 @@ def dijkstras(mat, sti, stj):
 
 	return dist_mat
 
-
 def solve(ele):
 	n = ele["n"]
 	m = ele["m"]
-	
-	new_mat = dijkstras(ele["mat"], 0, 0)
-	print(new_mat)
+
+	fnl_mat = []
+	for i in range(n):
+		row = []
+		for j in range(m):
+			row.append({"dij" : dijkstras(ele["mat"], i, j), "subset" : np.zeros((16))})
+		fnl_mat.append(row)
+
+	houses = [1, 2, 4, 8]
+	for ind, hus in enumerate(houses):
+		house_c = ele["houses"][rev_houses[ind]]
+		for i in range(n):
+			for j in range(m):
+				fnl_mat[i][j]["subset"][hus] = fnl_mat[i][j]["dij"][house_c[0]][house_c[1]]
+
+	for sub in range(1, 16):
+		if sub in houses:
+			continue
+		first_update = np.ones((n, m)) * float("inf")
+		for subsub in range(1, sub):
+			if(subsub & sub == subsub):
+				sec1 = subsub
+				sec2 = subsub ^ sub
+				print(subsub, sub, sec1, sec2)
+				for i in range(n):
+					for j in range(m):
+						curr_subset = fnl_mat[i][j]["subset"]
+						min_join = curr_subset[sec1] + curr_subset[sec2] - 1
+						if(min_join < first_update[i][j]):
+							first_update[i][j] = min_join
+
+		print(first_update)
+
+		# second_update = np.ones((n, m)) * float("inf")
+		for i in range(n):
+			for j in range(m):
+				min_val = first_update[i][j]
+				for i2 in range(n):
+					for j2 in range(m):
+						poss_min = first_update[i2][j2] + fnl_mat[i][j]["dij"][i2][j2]
+						if(poss_min < min_val):
+							min_val = poss_min
+				fnl_mat[i][j]["subset"][sub] = min_val
+		
+		for i in range(n):
+			for j in range(m):
+				
+
+		break
+
+	min_val = float("inf")
+	for i in range(n):
+		for j in range(m):
+			if(fnl_mat[i][j]["subset"][15] < min_val):
+				min_val = fnl_mat[i][j]["subset"][15]
+
+	print(min_val)
 	return ele
 
 inputFile = sys.argv[1]
